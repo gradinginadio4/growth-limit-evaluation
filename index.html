@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diagnostic : Croissance vs. Saturation Opérationnelle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
@@ -15,57 +18,66 @@
         }
 
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: var(--white); color: #1A1A1A; margin: 0; line-height: 1.6; }
+        body { 
+            font-family: 'Epilogue', sans-serif; 
+            background: var(--white); 
+            color: #1A1A1A; 
+            margin: 0; 
+            line-height: 1.6;
+            text-align: center; /* Alignement central global */
+        }
         
-        header { padding: 40px 20px; text-align: center; }
-        .logo-container img { width: 120px; height: auto; cursor: pointer; transition: opacity 0.2s; }
+        header { padding: 40px 20px; }
+        .logo-container img { width: 150px; height: auto; cursor: pointer; }
         
         .container { max-width: 700px; margin: 0 auto; padding: 20px; }
-        .card { background: var(--white); border: 1px solid var(--border); padding: 40px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .card { 
+            background: var(--white); 
+            border: 1px solid var(--border); 
+            padding: 40px; 
+            border-radius: 4px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+            text-align: center; 
+        }
 
-        h1 { color: var(--blue); font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+        h1 { color: var(--blue); font-size: 26px; font-weight: 800; margin-bottom: 15px; }
         p.subtitle { font-size: 16px; color: #666; margin-bottom: 30px; }
 
         .btn { 
-            display: inline-block; background: var(--blue); color: white; padding: 14px 28px; 
+            display: inline-block; background: var(--blue); color: white; padding: 16px 30px; 
             text-decoration: none; border-radius: 2px; font-weight: 600; cursor: pointer; border: none;
-            width: 100%; font-size: 16px; transition: background 0.2s; text-align: center;
+            width: 100%; font-size: 16px; transition: opacity 0.2s; text-align: center;
+            font-family: 'Epilogue', sans-serif;
         }
-        .btn:hover { opacity: 0.95; }
+        .btn:hover { opacity: 0.9; }
         .btn-pink { background: var(--pink); margin-top: 20px; }
 
-        /* Micro-blocs contextuels */
         .sector-context { 
-            background: var(--gray-light); padding: 15px; border-left: 3px solid var(--blue); 
-            font-size: 13px; margin-top: 30px; color: #444; 
+            background: var(--gray-light); padding: 20px; border-top: 3px solid var(--blue); 
+            font-size: 13px; margin-top: 30px; color: #444; text-align: center;
         }
-        .sector-tag { font-weight: bold; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+        .sector-tag { font-weight: bold; color: var(--blue); text-transform: uppercase; display: block; margin-bottom: 6px; }
 
-        /* Quiz Logic UI */
         #quiz-container { display: none; }
-        .progress-bar { height: 4px; background: #EEE; margin-bottom: 30px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--pink); width: 0%; transition: width 0.3s ease; }
+        .progress-bar { height: 4px; background: #EEE; margin-bottom: 30px; }
+        .progress-fill { height: 100%; background: var(--pink); width: 0%; transition: width 0.3s; }
         
-        .question-title { font-size: 18px; font-weight: 600; margin-bottom: 25px; min-height: 50px; }
+        .question-title { font-size: 20px; font-weight: 700; margin-bottom: 30px; color: var(--blue); }
         .options-list { display: flex; flex-direction: column; gap: 12px; }
         .option-btn { 
             padding: 16px; border: 1px solid var(--border); background: var(--white); 
-            text-align: left; cursor: pointer; font-size: 15px; border-radius: 2px; transition: all 0.2s;
+            text-align: center; cursor: pointer; font-size: 15px; border-radius: 2px;
+            font-family: 'Epilogue', sans-serif; transition: all 0.2s;
         }
         .option-btn:hover { border-color: var(--pink); background: #FFF9FC; }
 
-        /* Résultats */
         #results-container { display: none; }
-        .score-box { text-align: center; padding: 20px 0; }
-        .score-value { font-size: 48px; font-weight: 800; color: var(--blue); }
-        .board-ready-box { background: var(--blue); color: white; padding: 25px; border-radius: 2px; margin: 25px 0; }
-        .board-ready-box h3 { margin-top: 0; font-size: 14px; text-transform: uppercase; opacity: 0.8; }
-        .board-ready-text { font-size: 17px; font-style: italic; line-height: 1.5; }
+        .score-value { font-size: 56px; font-weight: 900; color: var(--blue); margin: 20px 0; }
+        .board-ready-box { background: var(--blue); color: white; padding: 30px; border-radius: 2px; margin: 25px 0; }
+        .board-ready-text { font-size: 17px; font-style: italic; font-weight: 300; }
 
-        footer { text-align: center; padding: 60px 20px; font-size: 12px; color: #999; border-top: 1px solid var(--gray-light); margin-top: 40px; }
+        footer { padding: 60px 20px; font-size: 12px; color: #999; }
         footer a { color: #999; text-decoration: underline; }
-
-        @media (max-width: 600px) { .card { padding: 20px; } }
     </style>
 </head>
 <body>
@@ -73,7 +85,7 @@
 <header>
     <div class="logo-container">
         <a href="https://homieuxmedia.com/">
-            <img src="logo-homieux.png" alt="Homieux Media">
+            <img src="logo-homieux.png.png" alt="Homieux Media">
         </a>
     </div>
 </header>
@@ -81,13 +93,12 @@
 <div class="container">
     <div id="home-screen" class="card">
         <h1>Diagnostic rapide : Croissance vs. Saturation opérationnelle</h1>
-        <p class="subtitle">Évaluez en 10 questions si votre structure actuelle supporte vos ambitions de croissance ou si elle risque de saturer vos équipes de direction.</p>
-        
+        <p class="subtitle">Évaluez en 10 questions si votre structure actuelle supporte vos ambitions de croissance.</p>
         <button class="btn" onclick="startQuiz()">Lancer le diagnostic</button>
 
         <div class="sector-context">
             <span class="sector-tag">📍 Contexte Belgique 2025-2026</span>
-            Le nombre de faillites en Belgique a atteint 10.655 unités sur l'année 2024, marquant une hausse de 7,5% par rapport à l'année précédente et soulignant une pression accrue sur la gestion opérationnelle.
+            Le nombre de faillites en Belgique a atteint 10.655 unités sur l'année 2024, marquant une hausse de 7,5% par rapport à l'année précédente.
             <br>Source : Statbel 2025
         </div>
     </div>
@@ -101,37 +112,26 @@
     </div>
 
     <div id="results-container" class="card">
-        <h1>Analyse de votre situation</h1>
-        <div class="score-box">
-            <div class="score-value" id="final-score">0</div>
-            <p id="result-status" style="font-weight: 600;"></p>
-        </div>
+        <h1>Analyse stratégique</h1>
+        <div class="score-value" id="final-score">0</div>
+        <p id="result-status" style="font-weight: 700; color: var(--pink);"></p>
 
         <div class="sector-context">
             <span class="sector-tag">📍 Contexte Belgique 2025-2026</span>
-            L'indice de confiance des chefs d'entreprise s'est établi à -12,4 points en janvier 2025, témoignant d'une prudence persistante des dirigeants belges face aux coûts structurels.
-            <br>Source : Banque Nationale de Belgique (BNB) 2025
+            L'indice de confiance des chefs d'entreprise s'est établi à -12,4 points en janvier 2025 (BNB).
         </div>
 
         <div class="board-ready-box">
-            <h3>Reformulation stratégique (Board-Ready)</h3>
             <div class="board-ready-text" id="board-text"></div>
         </div>
 
-        <div class="sector-context" style="background: white; border: 1px solid var(--border);">
-            <span class="sector-tag">📍 Contexte Belgique 2025-2026</span>
-            Le coût salarial horaire moyen en Belgique figure parmi les plus élevés de la zone euro, rendant l'optimisation des flux décisionnels critique pour maintenir la rentabilité.
-            <br>Source : SPF Économie 2025
-        </div>
-
-        <button class="btn" style="background: #555; margin-top: 30px;" onclick="generatePDF()">Télécharger le rapport PDF</button>
-        
-        <a id="cta-button" href="#" class="btn btn-pink">Discutons de votre cas concret – 20 min sans engagement</a>
+        <button class="btn" style="background: #333;" onclick="generatePDF()">Rapport PDF</button>
+        <a id="cta-button" href="#" class="btn btn-pink">Discutons de votre cas concret</a>
     </div>
 </div>
 
 <footer>
-    © 2026 <a href="https://homieuxmedia.com/">Homieux Media</a> | Diagnostic stratégique confidentiel pour PME & ETI.
+    © 2026 <a href="https://homieuxmedia.com/">Homieux Media</a>
 </footer>
 
 <script>
@@ -168,11 +168,8 @@
     function handleAnswer(points) {
         totalScore += points;
         currentIdx++;
-        if (currentIdx < questions.length) {
-            renderQuestion();
-        } else {
-            showResults();
-        }
+        if (currentIdx < questions.length) renderQuestion();
+        else showResults();
     }
 
     function showResults() {
@@ -180,46 +177,24 @@
         document.getElementById('results-container').style.display = 'block';
         document.getElementById('final-score').innerText = totalScore + "/100";
 
-        let status = "";
-        let boardText = "";
-
-        if (totalScore >= 70) {
-            status = "Saturation critique : Structure à risque.";
-            boardText = "« Le diagnostic révèle que l'inertie opérationnelle actuelle consomme les marges de manœuvre stratégiques. Une restructuration des flux décisionnels est impérative pour préserver la scalabilité. »";
-        } else if (totalScore >= 40) {
-            status = "Zone de vigilance : Croissance sous tension.";
-            boardText = "« Bien que les fondamentaux soient présents, la dispersion des ressources sur des tâches à faible valeur ajoutée limite notre réactivité face au marché belge. »";
-        } else {
-            status = "Optimisation : Potentiel d'accélération.";
-            boardText = "« L'organisation présente une maturité solide. Le levier de croissance se situe désormais dans le raffinement de l'expérience client et l'efficience technologique. »";
-        }
+        let status = totalScore >= 70 ? "Saturation critique" : (totalScore >= 40 ? "Vigilance requise" : "Structure saine");
+        let boardText = totalScore >= 70 ? 
+            "« L'inertie opérationnelle actuelle consomme les marges de manœuvre stratégiques. Une restructuration est impérative. »" : 
+            "« L'organisation est stable, l'enjeu est désormais l'accélération et l'efficience technologique. »";
 
         document.getElementById('result-status').innerText = status;
         document.getElementById('board-text').innerText = boardText;
-        
-        const calendlyBase = "https://calendly.com/homieuxmedia/discovery-call-gratuit-discutons-de-vos-defis";
-        document.getElementById('cta-button').href = `${calendlyBase}?utm_term=${totalScore}`;
+        document.getElementById('cta-button').href = `https://calendly.com/homieuxmedia/discovery-call-gratuit-discutons-de-vos-defis?score=${totalScore}`;
     }
 
-    async function generatePDF() {
+    function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setTextColor(0, 8, 135);
-        doc.setFontSize(18);
-        doc.text("Rapport de Diagnostic Stratégique", 20, 20);
-        doc.setTextColor(26, 26, 26);
-        doc.setFontSize(12);
-        doc.text("Organisme : Homieux Media - 2026", 20, 30);
-        doc.text("--------------------------------------------------", 20, 35);
-        doc.text(`Score de saturation opérationnelle : ${totalScore}/100`, 20, 45);
-        doc.setFontSize(14);
-        doc.text("Recommandation Board :", 20, 60);
-        doc.setFontSize(11);
-        const splitText = doc.splitTextToSize(document.getElementById('board-text').innerText, 170);
-        doc.text(splitText, 20, 70);
-        doc.save("Diagnostic-Homieux-Media.pdf");
+        doc.setFont("helvetica", "bold");
+        doc.text("Diagnostic Homieux Media", 20, 20);
+        doc.text(`Score : ${totalScore}/100`, 20, 40);
+        doc.save("Diagnostic.pdf");
     }
 </script>
-
 </body>
 </html>
