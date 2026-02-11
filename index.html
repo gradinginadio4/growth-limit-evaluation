@@ -3,212 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnostic : Croissance vs Saturation Opérationnelle</title>
+    <title>Diagnostic : Croissance vs. Saturation Opérationnelle</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --blue: #000887;
             --pink: #ED51C2;
             --white: #FFFFFF;
-            --gray-bg: #f4f7f9;
-            --text: #1a1a1a;
+            --gray-light: #F8F9FA;
+            --border: #E0E0E0;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--white); color: var(--text); margin: 0; line-height: 1.6; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: var(--white); color: #1A1A1A; margin: 0; line-height: 1.6; }
         
-        header { padding: 2rem; text-align: center; border-bottom: 1px solid #eee; }
-        .logo-link { cursor: pointer; display: inline-block; }
-        .logo-placeholder { font-weight: bold; color: var(--blue); font-size: 1.5rem; text-decoration: none; }
+        header { padding: 40px 20px; text-align: center; }
+        .logo-container img { width: 120px; height: auto; cursor: pointer; transition: opacity 0.2s; }
+        
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        .card { background: var(--white); border: 1px solid var(--border); padding: 40px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 
-        .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
-        .card { background: white; padding: 2.5rem; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,8,135,0.05); border: 1px solid #eee; }
-
-        h1 { color: var(--blue); font-size: 1.8rem; margin-bottom: 1rem; }
-        p.subtitle { color: #666; margin-bottom: 2rem; }
+        h1 { color: var(--blue); font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+        p.subtitle { font-size: 16px; color: #666; margin-bottom: 30px; }
 
         .btn { 
-            display: inline-block; background: var(--blue); color: white; padding: 1rem 2rem; 
+            display: inline-block; background: var(--blue); color: white; padding: 14px 28px; 
             text-decoration: none; border-radius: 2px; font-weight: 600; cursor: pointer; border: none;
-            transition: opacity 0.2s; font-size: 1rem;
+            width: 100%; font-size: 16px; transition: background 0.2s; text-align: center;
         }
-        .btn:hover { opacity: 0.9; }
-        .btn-pink { background: var(--pink); margin-top: 1rem; width: 100%; text-align: center; }
+        .btn:hover { opacity: 0.95; }
+        .btn-pink { background: var(--pink); margin-top: 20px; }
 
-        .sector-data { 
-            background: #f9f9f9; padding: 1rem; border-left: 4px solid var(--blue); 
-            font-size: 0.85rem; margin-top: 2rem; color: #444; 
+        /* Micro-blocs contextuels */
+        .sector-context { 
+            background: var(--gray-light); padding: 15px; border-left: 3px solid var(--blue); 
+            font-size: 13px; margin-top: 30px; color: #444; 
         }
-        .sector-tag { font-weight: bold; color: var(--blue); display: block; margin-bottom: 0.3rem; }
+        .sector-tag { font-weight: bold; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
 
-        .question-step { display: none; }
-        .question-step.active { display: block; }
-        .options { margin-top: 1.5rem; }
-        .option-btn { 
-            display: block; width: 100%; padding: 1rem; margin-bottom: 0.8rem; 
-            border: 1px solid #ddd; background: white; text-align: left; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .option-btn:hover { border-color: var(--pink); background: #fffafa; }
-
-        #results-screen { display: none; }
-        .score-display { font-size: 3rem; font-weight: bold; color: var(--blue); margin: 1rem 0; }
+        /* Quiz Logic UI */
+        #quiz-container { display: none; }
+        .progress-bar { height: 4px; background: #EEE; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--pink); width: 0%; transition: width 0.3s ease; }
         
-        .board-argument { 
-            background: var(--blue); color: white; padding: 1.5rem; margin: 1.5rem 0;
-            border-radius: 2px; font-style: italic;
+        .question-title { font-size: 18px; font-weight: 600; margin-bottom: 25px; min-height: 50px; }
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn { 
+            padding: 16px; border: 1px solid var(--border); background: var(--white); 
+            text-align: left; cursor: pointer; font-size: 15px; border-radius: 2px; transition: all 0.2s;
         }
+        .option-btn:hover { border-color: var(--pink); background: #FFF9FC; }
 
-        footer { text-align: center; padding: 3rem; font-size: 0.8rem; color: #999; }
-        footer a { color: #999; text-decoration: none; }
+        /* Résultats */
+        #results-container { display: none; }
+        .score-box { text-align: center; padding: 20px 0; }
+        .score-value { font-size: 48px; font-weight: 800; color: var(--blue); }
+        .board-ready-box { background: var(--blue); color: white; padding: 25px; border-radius: 2px; margin: 25px 0; }
+        .board-ready-box h3 { margin-top: 0; font-size: 14px; text-transform: uppercase; opacity: 0.8; }
+        .board-ready-text { font-size: 17px; font-style: italic; line-height: 1.5; }
 
-        .progress-bar { height: 4px; background: #eee; margin-bottom: 2rem; }
-        .progress-fill { height: 100%; background: var(--pink); width: 0%; transition: width 0.3s; }
+        footer { text-align: center; padding: 60px 20px; font-size: 12px; color: #999; border-top: 1px solid var(--gray-light); margin-top: 40px; }
+        footer a { color: #999; text-decoration: underline; }
+
+        @media (max-width: 600px) { .card { padding: 20px; } }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="https://homieuxmedia.com/" class="logo-link">
-        <span class="logo-placeholder">HOMIEUX MEDIA</span>
-    </a>
+    <div class="logo-container">
+        <a href="https://homieuxmedia.com/">
+            <img src="logo-homieux.png" alt="Homieux Media">
+        </a>
+    </div>
 </header>
 
 <div class="container">
-    <div id="welcome-screen" class="card">
+    <div id="home-screen" class="card">
         <h1>Diagnostic rapide : Croissance vs. Saturation opérationnelle</h1>
         <p class="subtitle">Évaluez en 10 questions si votre structure actuelle supporte vos ambitions de croissance ou si elle risque de saturer vos équipes de direction.</p>
+        
         <button class="btn" onclick="startQuiz()">Lancer le diagnostic</button>
 
-        <div class="sector-data">
+        <div class="sector-context">
             <span class="sector-tag">📍 Contexte Belgique 2025-2026</span>
-            En 2024, le nombre de faillites en Belgique a atteint 10 655 unités, soit une hausse de 7,5% par rapport à 2023, illustrant une pression accrue sur la gestion opérationnelle des entreprises.<br>
-            <strong>Source : Statbel 2025</strong>
+            Le nombre de faillites en Belgique a atteint 10.655 unités sur l'année 2024, marquant une hausse de 7,5% par rapport à l'année précédente et soulignant une pression accrue sur la gestion opérationnelle.
+            <br>Source : Statbel 2025
         </div>
     </div>
 
-    <div id="quiz-screen" class="card" style="display:none;">
+    <div id="quiz-container" class="card">
         <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
-        <div id="question-container"></div>
+        <div id="question-area">
+            <div class="question-title" id="q-text"></div>
+            <div class="options-list" id="q-options"></div>
+        </div>
     </div>
 
-    <div id="results-screen" class="card">
-        <h2>Analyse de votre situation</h2>
-        <div class="score-display"><span id="score-value">0</span>/100</div>
-        <p id="score-text"></p>
+    <div id="results-container" class="card">
+        <h1>Analyse de votre situation</h1>
+        <div class="score-box">
+            <div class="score-value" id="final-score">0</div>
+            <p id="result-status" style="font-weight: 600;"></p>
+        </div>
 
-        <div class="sector-data">
+        <div class="sector-context">
             <span class="sector-tag">📍 Contexte Belgique 2025-2026</span>
-            L'indice de confiance des chefs d'entreprise en Belgique s'est stabilisé à -12,4 points en janvier 2025, reflétant une prudence persistante face aux coûts structurels.<br>
-            <strong>Source : Banque Nationale de Belgique (BNB) 2025</strong>
+            L'indice de confiance des chefs d'entreprise s'est établi à -12,4 points en janvier 2025, témoignant d'une prudence persistante des dirigeants belges face aux coûts structurels.
+            <br>Source : Banque Nationale de Belgique (BNB) 2025
         </div>
 
-        <div id="board-ready-section">
+        <div class="board-ready-box">
             <h3>Reformulation stratégique (Board-Ready)</h3>
-            <div class="board-argument" id="dynamic-argument"></div>
-            
-            <div class="sector-data" style="background: white; border: 1px solid #eee;">
-                <span class="sector-tag">📍 Contexte Belgique 2025-2026</span>
-                Le coût salarial horaire moyen en Belgique reste l'un des plus élevés de la zone euro, imposant une optimisation stricte des processus de décision.<br>
-                <strong>Source : SPF Économie 2025</strong>
-            </div>
+            <div class="board-ready-text" id="board-text"></div>
         </div>
 
-        <button class="btn" style="background:#555" onclick="downloadPDF()">Télécharger le rapport PDF</button>
-        <a id="cta-link" href="#" class="btn btn-pink">Discutons de votre cas concret – 20 min sans engagement</a>
+        <div class="sector-context" style="background: white; border: 1px solid var(--border);">
+            <span class="sector-tag">📍 Contexte Belgique 2025-2026</span>
+            Le coût salarial horaire moyen en Belgique figure parmi les plus élevés de la zone euro, rendant l'optimisation des flux décisionnels critique pour maintenir la rentabilité.
+            <br>Source : SPF Économie 2025
+        </div>
+
+        <button class="btn" style="background: #555; margin-top: 30px;" onclick="generatePDF()">Télécharger le rapport PDF</button>
+        
+        <a id="cta-button" href="#" class="btn btn-pink">Discutons de votre cas concret – 20 min sans engagement</a>
     </div>
 </div>
 
 <footer>
-    <p>&copy; 2026 <a href="https://homieuxmedia.com/">Homieux Media</a> | Diagnostic réservé aux dirigeants de PME/ETI.</p>
+    © 2026 <a href="https://homieuxmedia.com/">Homieux Media</a> | Diagnostic stratégique confidentiel pour PME & ETI.
 </footer>
 
 <script>
     const questions = [
-        { q: "L'équipe de direction passe-t-elle plus de 20% de son temps sur des tâches opérationnelles ?", options: [{t:"Oui souvent", s:10}, {t:"Parfois", s:5}, {t:"Rarement", s:0}] },
-        { q: "Les décisions stratégiques sont-elles ralenties par un manque de données claires ?", options: [{t:"Constamment", s:10}, {t:"Souvent", s:7}, {t:"Jamais", s:0}] },
-        { q: "Votre croissance actuelle repose-t-elle sur l'effort héroïque de quelques individus ?", options: [{t:"Entièrement", s:10}, {t:"Partiellement", s:5}, {t:"Non, les processus sont rodés", s:0}] },
-        { q: "Le reporting mensuel est-il prêt en moins de 3 jours après la fin du mois ?", options: [{t:"Non, plus de 10 jours", s:10}, {t:"Entre 4 et 10 jours", s:5}, {t:"Oui, quasi instantané", s:0}] },
-        { q: "Avez-vous une vue en temps réel sur votre marge nette par projet/service ?", options: [{t:"Non", s:10}, {t:"Approximative", s:5}, {t:"Oui, précise", s:0}] },
-        { q: "Le recrutement de nouveaux profils techniques est-il devenu votre goulot d'étranglement ?", options: [{t:"Critique", s:10}, {t:"Modéré", s:5}, {t:"Sous contrôle", s:0}] },
-        { q: "Utilisez-vous plus de 3 fichiers Excel différents pour piloter la même activité ?", options: [{t:"Oui", s:10}, {t:"Non, outil centralisé", s:0}] },
-        { q: "La communication entre les ventes et l'exécution est-elle fluide ?", options: [{t:"Silotage marqué", s:10}, {t:"Améliorable", s:5}, {t:"Parfaite", s:0}] },
-        { q: "Votre carnet de commandes s'essouffle-t-il par manque de prospection active ?", options: [{t:"Oui", s:10}, {t:"Stable", s:5}, {t:"En forte croissance", s:0}] },
-        { q: "Pouvez-vous quitter l'entreprise 2 semaines sans que l'activité ne ralentisse ?", options: [{t:"Impossible", s:10}, {t:"Difficilement", s:5}, {t:"Sans problème", s:0}] }
+        { q: "L'équipe de direction passe-t-elle plus de 20% de son temps sur des tâches opérationnelles ?", opt: [{t:"Oui souvent", s:10}, {t:"Parfois", s:5}, {t:"Rarement", s:0}] },
+        { q: "Les décisions stratégiques sont-elles ralenties par un manque de données claires ?", opt: [{t:"Constamment", s:10}, {t:"Souvent", s:7}, {t:"Jamais", s:0}] },
+        { q: "Votre croissance actuelle repose-t-elle sur l'effort héroïque de quelques individus ?", opt: [{t:"Entièrement", s:10}, {t:"Partiellement", s:5}, {t:"Non, les processus sont rodés", s:0}] },
+        { q: "Le reporting mensuel est-il prêt en moins de 3 jours après la fin du mois ?", opt: [{t:"Non, plus de 10 jours", s:10}, {t:"Entre 4 et 10 jours", s:5}, {t:"Oui, quasi instantané", s:0}] },
+        { q: "Avez-vous une vue en temps réel sur votre marge nette par projet/service ?", opt: [{t:"Non", s:10}, {t:"Approximative", s:5}, {t:"Oui, précise", s:0}] },
+        { q: "Le recrutement de nouveaux profils techniques est-il devenu votre goulot d'étranglement ?", opt: [{t:"Critique", s:10}, {t:"Modéré", s:5}, {t:"Sous contrôle", s:0}] },
+        { q: "Utilisez-vous plus de 3 fichiers Excel différents pour piloter la même activité ?", opt: [{t:"Oui", s:10}, {t:"Non, outil centralisé", s:0}] },
+        { q: "La communication entre les ventes et l'exécution est-elle fluide ?", opt: [{t:"Silotage marqué", s:10}, {t:"Améliorable", s:5}, {t:"Parfaite", s:0}] },
+        { q: "Votre carnet de commandes s'essouffle-t-il par manque de prospection active ?", opt: [{t:"Oui", s:10}, {t:"Stable", s:5}, {t:"En forte croissance", s:0}] },
+        { q: "Pouvez-vous quitter l'entreprise 2 semaines sans que l'activité ne ralentisse ?", opt: [{t:"Impossible", s:10}, {t:"Difficilement", s:5}, {t:"Sans problème", s:0}] }
     ];
 
-    let currentStep = 0;
+    let currentIdx = 0;
     let totalScore = 0;
 
     function startQuiz() {
-        document.getElementById('welcome-screen').style.display = 'none';
-        document.getElementById('quiz-screen').style.display = 'block';
-        showQuestion();
+        document.getElementById('home-screen').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        renderQuestion();
     }
 
-    function showQuestion() {
-        const container = document.getElementById('question-container');
-        const q = questions[currentStep];
-        let html = `<h3>Question ${currentStep + 1}/10</h3><p style="font-size:1.2rem">${q.q}</p><div class="options">`;
-        q.options.forEach(opt => {
-            html += `<button class="option-btn" onclick="nextStep(${opt.s})">${opt.t}</button>`;
-        });
-        html += `</div>`;
-        container.innerHTML = html;
-        document.getElementById('progress').style.width = ((currentStep / questions.length) * 100) + '%';
+    function renderQuestion() {
+        const q = questions[currentIdx];
+        document.getElementById('q-text').innerText = q.q;
+        const optionsHtml = q.opt.map(o => `<button class="option-btn" onclick="handleAnswer(${o.s})">${o.t}</button>`).join('');
+        document.getElementById('q-options').innerHTML = optionsHtml;
+        document.getElementById('progress').style.width = ((currentIdx / questions.length) * 100) + '%';
     }
 
-    function nextStep(score) {
-        totalScore += score;
-        currentStep++;
-        if (currentStep < questions.length) {
-            showQuestion();
+    function handleAnswer(points) {
+        totalScore += points;
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            renderQuestion();
         } else {
             showResults();
         }
     }
 
     function showResults() {
-        document.getElementById('quiz-screen').style.display = 'none';
-        document.getElementById('results-screen').style.display = 'block';
-        document.getElementById('score-value').innerText = totalScore;
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('results-container').style.display = 'block';
+        document.getElementById('final-score').innerText = totalScore + "/100";
 
-        let text = "";
-        let argument = "";
+        let status = "";
+        let boardText = "";
 
         if (totalScore >= 70) {
-            text = "Saturation critique : Votre structure actuelle freine mécaniquement votre croissance. Risque élevé de désengagement des talents clés.";
-            argument = "« Le diagnostic révèle que l'inertie opérationnelle actuelle consomme les marges de manœuvre stratégiques. Une restructuration des flux décisionnels est impérative pour préserver la scalabilité. »";
+            status = "Saturation critique : Structure à risque.";
+            boardText = "« Le diagnostic révèle que l'inertie opérationnelle actuelle consomme les marges de manœuvre stratégiques. Une restructuration des flux décisionnels est impérative pour préserver la scalabilité. »";
         } else if (totalScore >= 40) {
-            text = "Zone de vigilance : La croissance est possible mais se fait au prix d'une fatigue organisationnelle croissante.";
-            argument = "« Bien que les fondamentaux soient présents, la dispersion des ressources sur des tâches à faible valeur ajoutée limite notre réactivité face au marché belge. »";
+            status = "Zone de vigilance : Croissance sous tension.";
+            boardText = "« Bien que les fondamentaux soient présents, la dispersion des ressources sur des tâches à faible valeur ajoutée limite notre réactivité face au marché belge. »";
         } else {
-            text = "Optimisation possible : Votre structure est saine, l'enjeu est désormais l'accélération et l'automatisation.";
-            argument = "« L'organisation présente une maturité solide. Le levier de croissance se situe désormais dans le raffinement de l'expérience client et l'efficience technologique. »";
+            status = "Optimisation : Potentiel d'accélération.";
+            boardText = "« L'organisation présente une maturité solide. Le levier de croissance se situe désormais dans le raffinement de l'expérience client et l'efficience technologique. »";
         }
 
-        document.getElementById('score-text').innerText = text;
-        document.getElementById('dynamic-argument').innerText = argument;
+        document.getElementById('result-status').innerText = status;
+        document.getElementById('board-text').innerText = boardText;
         
-        const cta = document.getElementById('cta-link');
-        cta.href = `https://calendly.com/homieuxmedia/discovery-call-gratuit-discutons-de-vos-defis?score=${totalScore}`;
+        const calendlyBase = "https://calendly.com/homieuxmedia/discovery-call-gratuit-discutons-de-vos-defis";
+        document.getElementById('cta-button').href = `${calendlyBase}?utm_term=${totalScore}`;
     }
 
-    function downloadPDF() {
+    async function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFont("helvetica", "bold");
-        doc.text("Rapport de Diagnostic Stratégique - Homieux Media", 20, 20);
-        doc.setFont("helvetica", "normal");
-        doc.text(`Score de saturation : ${totalScore}/100`, 20, 40);
-        doc.text("Analyse :", 20, 50);
-        doc.setFontSize(10);
-        const splitText = doc.splitTextToSize(document.getElementById('score-text').innerText, 170);
-        doc.text(splitText, 20, 60);
-        doc.text("Argumentaire Board-Ready :", 20, 80);
-        const splitArg = doc.splitTextToSize(document.getElementById('dynamic-argument').innerText, 170);
-        doc.text(splitArg, 20, 90);
-        doc.save("diagnostic-croissance-belgique.pdf");
+        doc.setTextColor(0, 8, 135);
+        doc.setFontSize(18);
+        doc.text("Rapport de Diagnostic Stratégique", 20, 20);
+        doc.setTextColor(26, 26, 26);
+        doc.setFontSize(12);
+        doc.text("Organisme : Homieux Media - 2026", 20, 30);
+        doc.text("--------------------------------------------------", 20, 35);
+        doc.text(`Score de saturation opérationnelle : ${totalScore}/100`, 20, 45);
+        doc.setFontSize(14);
+        doc.text("Recommandation Board :", 20, 60);
+        doc.setFontSize(11);
+        const splitText = doc.splitTextToSize(document.getElementById('board-text').innerText, 170);
+        doc.text(splitText, 20, 70);
+        doc.save("Diagnostic-Homieux-Media.pdf");
     }
 </script>
 
