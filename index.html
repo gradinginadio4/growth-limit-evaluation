@@ -6,7 +6,7 @@
     <title>Diagnostic : Croissance vs. Saturation Opérationnelle</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
@@ -18,66 +18,75 @@
         }
 
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        
         body { 
             font-family: 'Epilogue', sans-serif; 
             background: var(--white); 
             color: #1A1A1A; 
             margin: 0; 
             line-height: 1.6;
-            text-align: center; /* Alignement central global */
+            text-align: center; /* Alignement central global imposé */
         }
         
-        header { padding: 40px 20px; }
-        .logo-container img { width: 150px; height: auto; cursor: pointer; }
+        header { padding: 50px 20px 20px 20px; }
         
-        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        /* Ajustement du logo pour assurer l'affichage */
+        .logo-container img { 
+            width: 180px; 
+            height: auto; 
+            display: block; 
+            margin: 0 auto; 
+        }
+        
+        .container { max-width: 750px; margin: 0 auto; padding: 20px; }
+        
         .card { 
             background: var(--white); 
             border: 1px solid var(--border); 
             padding: 40px; 
             border-radius: 4px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-            text-align: center; 
+            box-shadow: 0 4px 20px rgba(0,8,135,0.04); 
+            text-align: center; /* Force le centrage du contenu de la carte */
         }
 
-        h1 { color: var(--blue); font-size: 26px; font-weight: 800; margin-bottom: 15px; }
-        p.subtitle { font-size: 16px; color: #666; margin-bottom: 30px; }
+        h1 { color: var(--blue); font-size: 28px; font-weight: 800; margin-bottom: 20px; line-height: 1.2; }
+        p.subtitle { font-size: 17px; color: #555; margin-bottom: 35px; max-width: 90%; margin-left: auto; margin-right: auto; }
 
         .btn { 
-            display: inline-block; background: var(--blue); color: white; padding: 16px 30px; 
+            display: inline-block; background: var(--blue); color: white; padding: 18px 30px; 
             text-decoration: none; border-radius: 2px; font-weight: 600; cursor: pointer; border: none;
-            width: 100%; font-size: 16px; transition: opacity 0.2s; text-align: center;
-            font-family: 'Epilogue', sans-serif;
+            width: 100%; max-width: 400px; font-size: 16px; transition: opacity 0.2s; 
+            font-family: 'Epilogue', sans-serif; margin: 0 auto;
         }
         .btn:hover { opacity: 0.9; }
-        .btn-pink { background: var(--pink); margin-top: 20px; }
+        .btn-pink { background: var(--pink); margin-top: 25px; }
 
         .sector-context { 
-            background: var(--gray-light); padding: 20px; border-top: 3px solid var(--blue); 
-            font-size: 13px; margin-top: 30px; color: #444; text-align: center;
+            background: var(--gray-light); padding: 25px; border-top: 4px solid var(--blue); 
+            font-size: 14px; margin-top: 40px; color: #444; text-align: center;
         }
-        .sector-tag { font-weight: bold; color: var(--blue); text-transform: uppercase; display: block; margin-bottom: 6px; }
+        .sector-tag { font-weight: 800; color: var(--blue); text-transform: uppercase; display: block; margin-bottom: 8px; letter-spacing: 1px; }
 
         #quiz-container { display: none; }
-        .progress-bar { height: 4px; background: #EEE; margin-bottom: 30px; }
-        .progress-fill { height: 100%; background: var(--pink); width: 0%; transition: width 0.3s; }
+        .progress-bar { height: 6px; background: #EEE; margin-bottom: 40px; border-radius: 3px; }
+        .progress-fill { height: 100%; background: var(--pink); width: 0%; transition: width 0.3s ease; }
         
-        .question-title { font-size: 20px; font-weight: 700; margin-bottom: 30px; color: var(--blue); }
-        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .question-title { font-size: 22px; font-weight: 600; margin-bottom: 35px; color: var(--blue); }
+        .options-list { display: flex; flex-direction: column; gap: 15px; align-items: center; }
         .option-btn { 
-            padding: 16px; border: 1px solid var(--border); background: var(--white); 
-            text-align: center; cursor: pointer; font-size: 15px; border-radius: 2px;
-            font-family: 'Epilogue', sans-serif; transition: all 0.2s;
+            width: 100%; max-width: 500px; padding: 18px; border: 1px solid var(--border); 
+            background: var(--white); cursor: pointer; font-size: 16px; border-radius: 4px;
+            font-family: 'Epilogue', sans-serif; transition: all 0.2s; text-align: center;
         }
-        .option-btn:hover { border-color: var(--pink); background: #FFF9FC; }
+        .option-btn:hover { border-color: var(--pink); background: #FFF9FC; color: var(--pink); }
 
         #results-container { display: none; }
-        .score-value { font-size: 56px; font-weight: 900; color: var(--blue); margin: 20px 0; }
-        .board-ready-box { background: var(--blue); color: white; padding: 30px; border-radius: 2px; margin: 25px 0; }
-        .board-ready-text { font-size: 17px; font-style: italic; font-weight: 300; }
+        .score-value { font-size: 64px; font-weight: 800; color: var(--blue); margin: 20px 0; }
+        .board-ready-box { background: var(--blue); color: white; padding: 35px; border-radius: 4px; margin: 30px 0; text-align: center; }
+        .board-ready-text { font-size: 18px; font-style: italic; font-weight: 400; line-height: 1.6; }
 
-        footer { padding: 60px 20px; font-size: 12px; color: #999; }
-        footer a { color: #999; text-decoration: underline; }
+        footer { padding: 60px 20px; font-size: 13px; color: #999; }
+        footer a { color: #999; text-decoration: none; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -92,8 +101,8 @@
 
 <div class="container">
     <div id="home-screen" class="card">
-        <h1>Diagnostic rapide : Croissance vs. Saturation opérationnelle</h1>
-        <p class="subtitle">Évaluez en 10 questions si votre structure actuelle supporte vos ambitions de croissance.</p>
+        <h1>Diagnostic rapide :<br>Croissance vs. Saturation opérationnelle</h1>
+        <p class="subtitle">Évaluez en 10 questions si votre structure actuelle supporte vos ambitions de croissance ou si elle sature vos équipes.</p>
         <button class="btn" onclick="startQuiz()">Lancer le diagnostic</button>
 
         <div class="sector-context">
@@ -114,24 +123,25 @@
     <div id="results-container" class="card">
         <h1>Analyse stratégique</h1>
         <div class="score-value" id="final-score">0</div>
-        <p id="result-status" style="font-weight: 700; color: var(--pink);"></p>
+        <p id="result-status" style="font-weight: 800; color: var(--pink); font-size: 20px;"></p>
 
         <div class="sector-context">
             <span class="sector-tag">📍 Contexte Belgique 2025-2026</span>
-            L'indice de confiance des chefs d'entreprise s'est établi à -12,4 points en janvier 2025 (BNB).
+            L'indice de confiance des chefs d'entreprise s'est établi à -12,4 points en janvier 2025, reflétant une prudence structurelle.
+            <br>Source : Banque Nationale de Belgique (BNB) 2025
         </div>
 
         <div class="board-ready-box">
             <div class="board-ready-text" id="board-text"></div>
         </div>
 
-        <button class="btn" style="background: #333;" onclick="generatePDF()">Rapport PDF</button>
-        <a id="cta-button" href="#" class="btn btn-pink">Discutons de votre cas concret</a>
+        <button class="btn" style="background: #333;" onclick="generatePDF()">Télécharger le rapport PDF</button>
+        <a id="cta-button" href="#" class="btn btn-pink">Discutons de votre cas concret – 20 min</a>
     </div>
 </div>
 
 <footer>
-    © 2026 <a href="https://homieuxmedia.com/">Homieux Media</a>
+    © 2026 <a href="https://homieuxmedia.com/">Homieux Media</a> | Diagnostic Board-Level
 </footer>
 
 <script>
@@ -163,6 +173,7 @@
         const optionsHtml = q.opt.map(o => `<button class="option-btn" onclick="handleAnswer(${o.s})">${o.t}</button>`).join('');
         document.getElementById('q-options').innerHTML = optionsHtml;
         document.getElementById('progress').style.width = ((currentIdx / questions.length) * 100) + '%';
+        window.scrollTo(0, 0);
     }
 
     function handleAnswer(points) {
@@ -176,11 +187,12 @@
         document.getElementById('quiz-container').style.display = 'none';
         document.getElementById('results-container').style.display = 'block';
         document.getElementById('final-score').innerText = totalScore + "/100";
+        window.scrollTo(0, 0);
 
-        let status = totalScore >= 70 ? "Saturation critique" : (totalScore >= 40 ? "Vigilance requise" : "Structure saine");
+        let status = totalScore >= 70 ? "Saturation critique" : (totalScore >= 40 ? "Zone de vigilance" : "Structure saine");
         let boardText = totalScore >= 70 ? 
-            "« L'inertie opérationnelle actuelle consomme les marges de manœuvre stratégiques. Une restructuration est impérative. »" : 
-            "« L'organisation est stable, l'enjeu est désormais l'accélération et l'efficience technologique. »";
+            "« Le diagnostic révèle que l'inertie opérationnelle actuelle consomme les marges de manœuvre stratégiques. Une restructuration est impérative pour préserver la scalabilité. »" : 
+            "« L'organisation présente une maturité solide. Le levier de croissance se situe désormais dans l'efficience technologique. »";
 
         document.getElementById('result-status').innerText = status;
         document.getElementById('board-text').innerText = boardText;
@@ -191,9 +203,13 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         doc.setFont("helvetica", "bold");
-        doc.text("Diagnostic Homieux Media", 20, 20);
-        doc.text(`Score : ${totalScore}/100`, 20, 40);
-        doc.save("Diagnostic.pdf");
+        doc.text("Rapport de Diagnostic Homieux Media", 20, 20);
+        doc.setFontSize(12);
+        doc.text(`Score de saturation : ${totalScore}/100`, 20, 40);
+        doc.text("Recommandation :", 20, 50);
+        const splitText = doc.splitTextToSize(document.getElementById('board-text').innerText, 170);
+        doc.text(splitText, 20, 60);
+        doc.save("Diagnostic-Croissance.pdf");
     }
 </script>
 </body>
